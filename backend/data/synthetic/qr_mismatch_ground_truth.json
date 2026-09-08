@@ -1,0 +1,10 @@
+{
+  "label": "qr_mismatch",
+  "modifications": [
+    "qr_id_differs_from_visible"
+  ],
+  "visible_id": "NIC-7732-9988-1234",
+  "qr_id": "NIC-4821-7734-9999",
+  "expected_risk": "HIGH",
+  "expected_score": 76
+}

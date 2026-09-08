@@ -1,0 +1,8 @@
+{
+  "label": "photo_tampered",
+  "modifications": [
+    "face_region_replaced"
+  ],
+  "expected_risk": "HIGH",
+  "expected_score": 79
+}

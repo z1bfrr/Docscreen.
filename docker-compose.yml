@@ -1,0 +1,39 @@
+version: "3.9"
+
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: docscreen_backend
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./backend/uploads:/app/uploads
+      - ./backend/models_store:/app/models_store
+      - ./data:/app/data
+    environment:
+      - DATABASE_URL=sqlite+aiosqlite:///./docscreen.db
+      - UPLOAD_DIR=./uploads
+      - DEMO_DOCS_DIR=./data/synthetic
+      - MODEL_PATH=./models_store/isolation_forest.pkl
+      - CORS_ORIGINS=http://localhost:3000
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: docscreen_frontend
+    ports:
+      - "3000:3000"
+    environment:
+      - NEXT_PUBLIC_API_URL=http://localhost:8000
+    depends_on:
+      - backend
+    restart: unless-stopped

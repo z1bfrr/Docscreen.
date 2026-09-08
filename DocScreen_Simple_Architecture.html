@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>DocScreen — Simple Architecture</title>
+  <style>
+    @page {
+      size: A4 portrait;
+      margin: 18mm;
+    }
+    * {
+      box-sizing: border-box;
+      -webkit-print-color-adjust: exact !important;
+      print-color-adjust: exact !important;
+    }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      color: #0f172a;
+      background: #ffffff;
+      line-height: 1.5;
+      font-size: 12px;
+      margin: 0;
+      padding: 0;
+    }
+    .header {
+      border-bottom: 1.5px solid #0f172a;
+      padding-bottom: 8px;
+      margin-bottom: 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+    }
+    h1 {
+      font-size: 20px;
+      margin: 0;
+      font-weight: 700;
+    }
+    .sub {
+      color: #64748b;
+      font-size: 11px;
+    }
+    .diagram-wrap {
+      border: 1px solid #e2e8f0;
+      border-radius: 6px;
+      padding: 8px;
+      margin-bottom: 28px;
+      background: #ffffff;
+    }
+    .diagram-wrap img {
+      width: 100%;
+      display: block;
+    }
+    .steps {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+    .step-item {
+      border-left: 2px solid #0f172a;
+      padding-left: 12px;
+    }
+    .step-item h3 {
+      margin: 0 0 4px 0;
+      font-size: 13px;
+      font-weight: 600;
+    }
+    .step-item p {
+      margin: 0;
+      color: #475569;
+      font-size: 11.5px;
+    }
+    .footer {
+      margin-top: 40px;
+      padding-top: 10px;
+      border-top: 1px solid #e2e8f0;
+      color: #94a3b8;
+      font-size: 10px;
+      display: flex;
+      justify-content: space-between;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="header">
+    <h1>DocScreen — Architecture Overview</h1>
+    <span class="sub">SIH 2026 Prototype</span>
+  </div>
+
+  <div class="diagram-wrap">
+    <img src="DocScreen_Simple_Architecture.svg" alt="DocScreen Simple Architecture">
+  </div>
+
+  <div class="steps">
+    <div class="step-item">
+      <h3>1. User &amp; Ingestion</h3>
+      <p>Documents (ID cards, passports) are uploaded via the Next.js web application (port 3000) and given an instant SHA-256 hash.</p>
+    </div>
+
+    <div class="step-item">
+      <h3>2. FastAPI Gateway</h3>
+      <p>The Python backend (port 8000) validates the image and routes it asynchronously to the screening pipeline.</p>
+    </div>
+
+    <div class="step-item">
+      <h3>3. Forensic Pipeline</h3>
+      <p>Runs Error Level Analysis (ELA) for image tampering, dual OCR for text, QR consistency checks, and an Isolation Forest anomaly model.</p>
+    </div>
+
+    <div class="step-item">
+      <h3>4. Risk Engine</h3>
+      <p>Synthesizes all pipeline findings into a single 0–100 risk score (Low, Medium, High). Critical discrepancies automatically escalate to ≥ 70.</p>
+    </div>
+
+    <div class="step-item" style="grid-column: span 2;">
+      <h3>5. Review &amp; Storage</h3>
+      <p>Flagged documents enter the human verification queue for officer review, and all results are saved to an immutable SQLite database.</p>
+    </div>
+  </div>
+
+  <div class="footer">
+    <span>DocScreen System Architecture</span>
+    <span>Simple 1-Page Summary</span>
+  </div>
+
+</body>
+</html>

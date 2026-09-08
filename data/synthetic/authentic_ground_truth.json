@@ -1,0 +1,11 @@
+{
+  "label": "authentic",
+  "modifications": [],
+  "expected_risk": "LOW",
+  "expected_score": 12,
+  "fields": {
+    "name": "ARJUN MEHTA",
+    "dob": "14/03/1992",
+    "doc_id": "NIC-4821-7734-0092"
+  }
+}

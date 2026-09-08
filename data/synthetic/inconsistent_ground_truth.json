@@ -1,0 +1,9 @@
+{
+  "label": "inconsistent",
+  "modifications": [
+    "dob_issue_age_impossible",
+    "expiry_before_issue"
+  ],
+  "expected_risk": "HIGH",
+  "expected_score": 71
+}

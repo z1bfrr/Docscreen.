@@ -1,0 +1,9 @@
+{
+  "label": "anomaly",
+  "modifications": [
+    "random_noise_injection",
+    "multiple_recompression"
+  ],
+  "expected_risk": "HIGH",
+  "expected_score": 88
+}

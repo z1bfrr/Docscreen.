@@ -1,0 +1,44 @@
+# Dependencies
+node_modules/
+frontend/node_modules/
+.venv/
+venv/
+backend/.venv/
+backend/venv/
+
+# Next.js
+.next/
+frontend/.next/
+out/
+frontend/out/
+.vercel/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.pytest_cache/
+
+# Databases & Runtime Uploads
+*.db
+backend/docscreen.db
+backend/uploads/*
+!backend/uploads/.gitkeep
+
+# Environment variables (keep templates)
+.env
+.env.local
+.env.*.local
+frontend/.env.local
+
+# Sensitive API client code
+frontend/lib/api.ts
+
+# IDE & OS
+.DS_Store
+Thumbs.db
+*.log
+.vscode/
+.idea/
+.agents/

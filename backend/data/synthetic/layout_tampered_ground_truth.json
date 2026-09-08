@@ -1,0 +1,8 @@
+{
+  "label": "layout_tampered",
+  "modifications": [
+    "id_field_shifted"
+  ],
+  "expected_risk": "MEDIUM",
+  "expected_score": 58
+}

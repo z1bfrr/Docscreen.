@@ -1,0 +1,10 @@
+{
+  "label": "low_quality",
+  "modifications": [
+    "blur",
+    "low_resolution",
+    "low_contrast"
+  ],
+  "expected_risk": "MEDIUM",
+  "expected_score": 45
+}

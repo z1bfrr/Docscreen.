@@ -1,0 +1,10 @@
+{
+  "label": "text_tampered",
+  "modifications": [
+    "dob_field_altered"
+  ],
+  "expected_risk": "HIGH",
+  "expected_score": 84,
+  "original_dob": "14/03/1992",
+  "tampered_dob": "14/03/2008"
+}

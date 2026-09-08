@@ -1,0 +1,95 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 880 260" width="100%" height="100%">
+  <defs>
+    <marker id="arr" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 2 L 7 5 L 0 8 z" fill="#0f172a" />
+    </marker>
+  </defs>
+
+  <style>
+    .title { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; font-size: 15px; font-weight: 700; fill: #0f172a; }
+    .step-num { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; font-size: 10px; font-weight: 700; fill: #64748b; text-transform: uppercase; letter-spacing: 0.5px; }
+    .card-title { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; font-size: 12.5px; font-weight: 600; fill: #0f172a; }
+    .card-sub { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; font-size: 10.5px; fill: #475569; }
+    .card-tag { font-family: "JetBrains Mono", Consolas, monospace; font-size: 9px; fill: #64748b; }
+    .arrow-line { fill: none; stroke: #0f172a; stroke-width: 1.5; }
+  </style>
+
+  <!-- Pure White Background -->
+  <rect width="880" height="260" fill="#ffffff" />
+
+  <!-- Simple Header -->
+  <g transform="translate(30, 26)">
+    <text x="0" y="0" class="title">DocScreen — Simple Architecture Overview</text>
+  </g>
+
+  <!-- Connecting Arrows -->
+  <!-- Card 1 -> Card 2 -->
+  <path d="M 175 140 L 205 140" class="arrow-line" marker-end="url(#arr)" />
+  <!-- Card 2 -> Card 3 -->
+  <path d="M 345 140 L 375 140" class="arrow-line" marker-end="url(#arr)" />
+  <!-- Card 3 -> Card 4 -->
+  <path d="M 535 140 L 565 140" class="arrow-line" marker-end="url(#arr)" />
+  <!-- Card 4 -> Card 5 -->
+  <path d="M 705 140 L 735 140" class="arrow-line" marker-end="url(#arr)" />
+
+  <!-- BOX 1: USER / FRONTEND -->
+  <g transform="translate(30, 65)">
+    <rect width="145" height="150" rx="6" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2" />
+    <text x="14" y="24" class="step-num">Step 1</text>
+    <text x="14" y="44" class="card-title">User &amp; Upload</text>
+    <line x1="14" y1="54" x2="131" y2="54" stroke="#f1f5f9" stroke-width="1" />
+    <text x="14" y="74" class="card-sub">• ID / Document</text>
+    <text x="14" y="92" class="card-sub">• Next.js 14 Web UI</text>
+    <text x="14" y="110" class="card-sub">• SHA-256 Hashing</text>
+    <text x="14" y="134" class="card-tag">PORT 3000</text>
+  </g>
+
+  <!-- BOX 2: BACKEND API -->
+  <g transform="translate(205, 65)">
+    <rect width="140" height="150" rx="6" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2" />
+    <text x="14" y="24" class="step-num">Step 2</text>
+    <text x="14" y="44" class="card-title">FastAPI Backend</text>
+    <line x1="14" y1="54" x2="126" y2="54" stroke="#f1f5f9" stroke-width="1" />
+    <text x="14" y="74" class="card-sub">• REST API Gateway</text>
+    <text x="14" y="92" class="card-sub">• Image Validation</text>
+    <text x="14" y="110" class="card-sub">• Task Dispatcher</text>
+    <text x="14" y="134" class="card-tag">PORT 8000</text>
+  </g>
+
+  <!-- BOX 3: AI FORENSIC PIPELINE -->
+  <g transform="translate(375, 65)">
+    <rect width="160" height="150" rx="6" fill="#ffffff" stroke="#0f172a" stroke-width="1.5" />
+    <text x="14" y="24" class="step-num">Step 3</text>
+    <text x="14" y="44" class="card-title">AI Forensic Pipeline</text>
+    <line x1="14" y1="54" x2="146" y2="54" stroke="#f1f5f9" stroke-width="1" />
+    <text x="14" y="74" class="card-sub">• ELA Tamper Check</text>
+    <text x="14" y="92" class="card-sub">• Dual OCR (Tesseract)</text>
+    <text x="14" y="110" class="card-sub">• QR Code Matching</text>
+    <text x="14" y="128" class="card-sub">• ML Anomaly Model</text>
+  </g>
+
+  <!-- BOX 4: RISK ENGINE -->
+  <g transform="translate(565, 65)">
+    <rect width="140" height="150" rx="6" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2" />
+    <text x="14" y="24" class="step-num">Step 4</text>
+    <text x="14" y="44" class="card-title">Risk Engine</text>
+    <line x1="14" y1="54" x2="126" y2="54" stroke="#f1f5f9" stroke-width="1" />
+    <text x="14" y="74" class="card-sub">• Weighted Fusion</text>
+    <text x="14" y="92" class="card-sub">• 0 – 100 Score</text>
+    <text x="14" y="110" class="card-sub">• Low / Med / High</text>
+    <text x="14" y="134" class="card-tag">OVERRIDE: ≥ 70</text>
+  </g>
+
+  <!-- BOX 5: PERSISTENCE & REVIEW -->
+  <g transform="translate(735, 65)">
+    <rect width="115" height="150" rx="6" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2" />
+    <text x="14" y="24" class="step-num">Step 5</text>
+    <text x="14" y="44" class="card-title">Review &amp; DB</text>
+    <line x1="14" y1="54" x2="101" y2="54" stroke="#f1f5f9" stroke-width="1" />
+    <text x="14" y="74" class="card-sub">• SQLite DB</text>
+    <text x="14" y="92" class="card-sub">• Human Review</text>
+    <text x="14" y="110" class="card-sub">• Audit Logs</text>
+    <text x="14" y="134" class="card-tag">VERDICT</text>
+  </g>
+
+</svg>

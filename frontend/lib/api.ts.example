@@ -1,0 +1,46 @@
+// lib/api.ts.example — API client template
+const API = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+
+export async function fetchJSON(path: string, opts?: RequestInit) {
+  // Implement fetch wrapper
+}
+
+export async function uploadDocument(file: File) {
+  // Implement upload logic
+}
+
+export async function pollAnalysis(analysisId: string, maxWait = 120000) {
+  // Implement polling logic
+}
+
+export async function runDemo(docName: string) {
+  // Implement demo run logic
+}
+
+export async function getDemoDocuments() {
+  // Implement demo documents query
+}
+
+export async function getAnalytics() {
+  // Implement analytics query
+}
+
+export async function getRiskQueue() {
+  // Implement risk queue query
+}
+
+export async function getRecentDocuments(limit = 20) {
+  // Implement recent documents query
+}
+
+export async function getDocument(id: string) {
+  // Implement get document
+}
+
+export async function submitReview(data: any) {
+  // Implement review submission
+}
+
+export async function getHealth() {
+  // Implement health check
+}

@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>DocScreen — System Architecture Brief</title>
+  <style>
+    @page {
+      size: A4 portrait;
+      margin: 14mm;
+    }
+    * {
+      box-sizing: border-box;
+      -webkit-print-color-adjust: exact !important;
+      print-color-adjust: exact !important;
+    }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      color: #0f172a;
+      background-color: #ffffff;
+      line-height: 1.45;
+      font-size: 11px;
+      margin: 0;
+      padding: 0;
+    }
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1.5px solid #0f172a;
+      padding-bottom: 8px;
+      margin-bottom: 12px;
+    }
+    .title-area h1 {
+      font-size: 19px;
+      margin: 0 0 2px 0;
+      color: #0f172a;
+      font-weight: 700;
+      letter-spacing: -0.4px;
+    }
+    .title-area p {
+      margin: 0;
+      font-size: 11px;
+      color: #64748b;
+      font-weight: 400;
+    }
+    .meta-tag {
+      font-size: 10px;
+      font-weight: 500;
+      color: #475569;
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      padding: 4px 10px;
+      border-radius: 4px;
+    }
+
+    .diagram-container {
+      width: 100%;
+      border: 1px solid #e2e8f0;
+      border-radius: 6px;
+      margin-bottom: 14px;
+      background: #ffffff;
+      padding: 2px;
+    }
+    .diagram-container img {
+      width: 100%;
+      display: block;
+      height: auto;
+    }
+
+    h2 {
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+      color: #0f172a;
+      margin: 12px 0 6px 0;
+      border-bottom: 1px solid #e2e8f0;
+      padding-bottom: 3px;
+      font-weight: 700;
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 8px;
+    }
+
+    .card {
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-radius: 4px;
+      padding: 8px 12px;
+    }
+    .card h3 {
+      margin: 0 0 4px 0;
+      font-size: 11px;
+      color: #0f172a;
+      font-weight: 600;
+    }
+    .card ul {
+      margin: 0;
+      font-size: 10px;
+      color: #475569;
+      padding-left: 14px;
+      line-height: 1.45;
+    }
+    .card p {
+      margin: 0;
+      font-size: 10px;
+      color: #475569;
+      line-height: 1.4;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 10px;
+      margin-top: 6px;
+    }
+    th, td {
+      padding: 5px 8px;
+      text-align: left;
+      border: 1px solid #e2e8f0;
+    }
+    th {
+      background: #f8fafc;
+      color: #0f172a;
+      font-weight: 600;
+      font-size: 9.5px;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+    }
+    tr:nth-child(even) { background: #fafbfc; }
+
+    .risk-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 8px;
+      margin-top: 6px;
+    }
+    .risk-box {
+      border: 1px solid #e2e8f0;
+      background: #f8fafc;
+      padding: 6px 8px;
+      border-radius: 4px;
+      text-align: center;
+    }
+    .risk-box .title {
+      font-weight: 600;
+      font-size: 10.5px;
+      color: #0f172a;
+    }
+    .risk-box .desc {
+      font-size: 9px;
+      color: #64748b;
+      margin-top: 2px;
+    }
+
+    .footer {
+      margin-top: 14px;
+      padding-top: 6px;
+      border-top: 1px solid #e2e8f0;
+      display: flex;
+      justify-content: space-between;
+      color: #94a3b8;
+      font-size: 9px;
+    }
+
+    .page-break {
+      page-break-before: always;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- PAGE 1: Architecture & Workflow -->
+  <div class="header">
+    <div class="title-area">
+      <h1>DocScreen — Architecture Brief</h1>
+      <p>Multi-Layer AI Document Screening &amp; Decision Fusion Pipeline</p>
+    </div>
+    <div class="meta-tag">
+      SIH Prototype Reference
+    </div>
+  </div>
+
+  <div class="diagram-container">
+    <img src="DocScreen_Architecture.svg" alt="DocScreen Clean Architecture">
+  </div>
+
+  <h2>1. Workflow Execution Summary</h2>
+  <div class="grid-2">
+    <div class="card">
+      <h3>1. Ingestion &amp; Image Preprocessing</h3>
+      <ul>
+        <li><strong>SHA-256 Hashing:</strong> Instant cryptographic duplicate detection.</li>
+        <li><strong>Quality Scoring:</strong> Laplacian blur and luminosity histogram analysis.</li>
+        <li><strong>Contrast Normalization:</strong> Adaptive CLAHE preprocessing.</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3>2. Dual OCR &amp; Structured Extraction</h3>
+      <ul>
+        <li><strong>Dual-Engine Pipeline:</strong> Tesseract primary with EasyOCR fallback.</li>
+        <li><strong>Spatial Extraction:</strong> Word-level bounding boxes and confidence metrics.</li>
+        <li><strong>Regex Anchors:</strong> Extraction of Name, DOB, and ID Numbers.</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="grid-2">
+    <div class="card">
+      <h3>3. Vision Forensics &amp; Tamper Detection</h3>
+      <ul>
+        <li><strong>Error Level Analysis (ELA):</strong> Identifies compression history anomalies from digital splices at Q=90.</li>
+        <li><strong>Noise Variance Grid:</strong> 12x12 patch analysis to detect pasted elements.</li>
+        <li><strong>Edge Disparity:</strong> Spots synthetic crop boundaries.</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3>4. Consistency &amp; ML Outlier Detection</h3>
+      <ul>
+        <li><strong>QR Cross-Validation:</strong> Pyzbar decodes QR payload and verifies consistency against printed OCR text.</li>
+        <li><strong>Temporal Logic:</strong> Validates Issue &lt; Expiry and age-DOB checks.</li>
+        <li><strong>Isolation Forest:</strong> Flags multidimensional outlier vectors.</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- PAGE 2: Decision Matrix & Tech Stack -->
+  <div class="page-break"></div>
+
+  <div class="header">
+    <div class="title-area">
+      <h1>Decision Fusion &amp; Specifications</h1>
+      <p>Weighted Risk Scoring, Override Logic, and Component Mapping</p>
+    </div>
+    <div class="meta-tag">
+      Technical Specifications
+    </div>
+  </div>
+
+  <h2>2. Signal Fusion Risk Engine</h2>
+  <p style="font-size: 10px; color: #475569; margin: 0 0 6px 0;">
+    The system synthesizes all detection outputs into a single index (0 – 100) using a weighted linear model:
+  </p>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Signal</th>
+        <th>Weight</th>
+        <th>Target Evaluation</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>Visual Tamper</strong></td>
+        <td>25%</td>
+        <td>ELA compression energy &amp; noise variance inconsistencies</td>
+      </tr>
+      <tr>
+        <td><strong>Template &amp; Layout</strong></td>
+        <td>15%</td>
+        <td>Shifted bounding boxes, missing official emblems, or margin modifications</td>
+      </tr>
+      <tr>
+        <td><strong>Cross-Field Consistency</strong></td>
+        <td>15%</td>
+        <td>QR code payload discrepancies vs printed OCR document text</td>
+      </tr>
+      <tr>
+        <td><strong>ML Anomaly (Isolation Forest)</strong></td>
+        <td>15%</td>
+        <td>Multidimensional outlier features compared to standard distributions</td>
+      </tr>
+      <tr>
+        <td><strong>OCR Anomalies</strong></td>
+        <td>10%</td>
+        <td>Character recognition confidence drops and distorted letterforms</td>
+      </tr>
+      <tr>
+        <td><strong>Pattern Violations</strong></td>
+        <td>10%</td>
+        <td>Checksum/regex failures (Aadhaar, PAN, Passport specifications)</td>
+      </tr>
+      <tr>
+        <td><strong>Metadata &amp; Quality</strong></td>
+        <td>10%</td>
+        <td>EXIF software modification markers, blur, and glare penalties</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h2>3. Decision Classification &amp; Overrides</h2>
+  <div class="risk-grid">
+    <div class="risk-box">
+      <div class="title">LOW RISK (0 – 30)</div>
+      <div class="desc">Standard verification; eligible for automated processing</div>
+    </div>
+    <div class="risk-box">
+      <div class="title">MEDIUM RISK (31 – 65)</div>
+      <div class="desc">Borderline confidence; queued for manual officer review</div>
+    </div>
+    <div class="risk-box">
+      <div class="title">HIGH RISK (66 – 100)</div>
+      <div class="desc">High likelihood of digital tampering or data contradiction</div>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top: 8px; border-left: 3px solid #0f172a;">
+    <h3 style="margin-bottom: 2px;">Critical Finding Override</h3>
+    <p>
+      If any check identifies an unambiguous contradiction (e.g., <strong>QR code payload disagrees with printed text</strong> or <strong>photo splice detected</strong>), the overall score is automatically elevated to <strong>&ge; 70 (HIGH RISK)</strong> regardless of other passing signals.
+    </p>
+  </div>
+
+  <h2>4. Component Technology Stack</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>Layer</th>
+        <th>Technology</th>
+        <th>Role</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>Frontend</strong></td>
+        <td>Next.js 14, React 19, Recharts</td>
+        <td>Web interface, bounding box viewer, analytics dashboard</td>
+      </tr>
+      <tr>
+        <td><strong>Backend API</strong></td>
+        <td>FastAPI, Uvicorn, Pydantic, Python 3.11</td>
+        <td>Asynchronous REST endpoints and analysis orchestration</td>
+      </tr>
+      <tr>
+        <td><strong>Vision &amp; Forensics</strong></td>
+        <td>OpenCV, PIL, NumPy</td>
+        <td>Image enhancement, Error Level Analysis, noise variance mapping</td>
+      </tr>
+      <tr>
+        <td><strong>OCR &amp; Barcode</strong></td>
+        <td>Tesseract OCR, EasyOCR, Pyzbar</td>
+        <td>Dual-engine optical character recognition and QR decoding</td>
+      </tr>
+      <tr>
+        <td><strong>Machine Learning</strong></td>
+        <td>Scikit-Learn (Isolation Forest)</td>
+        <td>Unsupervised multidimensional anomaly detection</td>
+      </tr>
+      <tr>
+        <td><strong>Data Persistence</strong></td>
+        <td>SQLite, SQLAlchemy ORM</td>
+        <td>Immutable audit logging and verification records</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="footer">
+    <span>DocScreen Technical Architecture Brief</span>
+    <span>Document ID: DS-ARCH-2026</span>
+  </div>
+
+</body>
+</html>
