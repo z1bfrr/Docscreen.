@@ -73,6 +73,28 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                 <span>Swiss-grade Verification Engine</span>
               </div>
             </div>
+
+            {/* Bottom Credits Line */}
+            <div style={{
+              maxWidth: 1240,
+              margin: "18px auto 0 auto",
+              paddingTop: "16px",
+              borderTop: "1px solid rgba(255, 255, 255, 0.05)",
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              flexWrap: "wrap",
+              gap: 12,
+              fontSize: 11.5,
+              color: "#64748B"
+            }}>
+              <div>
+                This website is built by <span style={{ color: "#F4F8FD", fontWeight: 600 }}>Laxsmi Shree</span>
+              </div>
+              <div>
+                © 2026 DocScreen AI Document Screening. All rights reserved.
+              </div>
+            </div>
           </footer>
         </div>
       </body>
