@@ -146,16 +146,24 @@ def compute_risk(
 
     risk_score = int(round(min(100.0, weighted_total)))
 
-    # ── Critical escalation ──
-    # Any CRITICAL finding elevates score to at least 70
-    has_critical = any(f.get("severity") in ("CRITICAL",) for f in findings)
-    if has_critical and risk_score < 70:
-        risk_score = 70
+    # ── Security Findings Escalation ──
+    # Any CRITICAL finding elevates score to at least 75 (HIGH RISK)
+    has_critical = any(f.get("severity") == "CRITICAL" for f in findings)
+    if has_critical and risk_score < 75:
+        risk_score = 75
 
-    # Multiple HIGH findings escalate
+    # Multiple or single HIGH findings escalate
     high_count = sum(1 for f in findings if f.get("severity") == "HIGH")
-    if high_count >= 3 and risk_score < 60:
-        risk_score = 60
+    if high_count >= 2 and risk_score < 68:
+        risk_score = 68
+    elif high_count == 1 and risk_score < 48:
+        risk_score = 48
+
+    # Severe visual tamper score escalation
+    if tamper_score >= 0.60 and risk_score < 72:
+        risk_score = 72
+    elif tamper_score >= 0.35 and risk_score < 42:
+        risk_score = 42
 
     label = _risk_label(risk_score)
 

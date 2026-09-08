@@ -192,6 +192,18 @@ async def run_pipeline(
         result["qr_details"] = qr
         qr_fields = qr.get("qr_fields", {})
         steps.append(_step("qr_analysis", "complete", f"QR: {qr.get('qr_status')}"))
+
+        # Check if QR code is expected for this document type (Aadhaar cards always carry a QR code)
+        if result.get("document_type") == "Aadhaar Card" and result.get("qr_status") == "not_found":
+            all_findings.append({
+                "source": "qr_analyzer",
+                "finding_type": "unreadable_or_missing_qr",
+                "severity": "HIGH",
+                "score": 0.75,
+                "confidence": 0.85,
+                "description": "Aadhaar security QR code is absent, unreadable, or fake. Genuine Aadhaar cards carry a machine-readable secure QR code.",
+                "evidence": {"expected_in": "Aadhaar Card", "qr_status": "not_found"}
+            })
     except Exception as e:
         logger.error(f"QR analysis failed: {e}")
         result["qr_status"] = "unavailable"
@@ -251,16 +263,34 @@ async def run_pipeline(
             heatmap_path.write_bytes(heatmap_bytes)
             result["forensic_heatmap_path"] = f"{document_id}_heatmap.jpg"
 
-        if tamper_score > 0.5:
-            for region in suspicious_regions:
+        if suspicious_regions:
+            has_severe = any(r.get("deviation", 0) > 10.0 or r.get("confidence", 0) > 0.90 for r in suspicious_regions)
+            severity = "CRITICAL" if ((has_severe and len(suspicious_regions) >= 15) or tamper_score > 0.75) else (
+                "HIGH" if (has_severe or tamper_score > 0.40 or len(suspicious_regions) >= 5) else "MEDIUM"
+            )
+
+            if len(suspicious_regions) > 5:
+                max_dev = max(r.get("deviation", 4.0) for r in suspicious_regions)
                 all_findings.append({
                     "source": "tamper_detection",
-                    "finding_type": region.get("type", "suspicious_region"),
-                    "severity": "HIGH" if tamper_score > 0.7 else "MEDIUM",
-                    "score": tamper_score, "confidence": region.get("confidence", 0.7),
-                    "description": f"Potential manipulation detected — {region.get('type', 'noise inconsistency')}",
-                    "evidence": {"bbox": region.get("bbox"), "tamper_score": tamper_score},
+                    "finding_type": "noise_inconsistency_splice",
+                    "severity": severity,
+                    "score": tamper_score,
+                    "confidence": 0.92,
+                    "description": f"Extensive noise floor disparity ({len(suspicious_regions)} blocks, up to {max_dev:.1f}x deviation) indicates photo or text splicing",
+                    "evidence": {"suspicious_region_count": len(suspicious_regions), "max_deviation": max_dev, "tamper_score": tamper_score},
                 })
+            else:
+                for region in suspicious_regions:
+                    all_findings.append({
+                        "source": "tamper_detection",
+                        "finding_type": region.get("type", "suspicious_region"),
+                        "severity": severity,
+                        "score": tamper_score,
+                        "confidence": region.get("confidence", 0.7),
+                        "description": f"Potential manipulation detected — {region.get('description', region.get('type'))}",
+                        "evidence": {"bbox": region.get("bbox"), "tamper_score": tamper_score},
+                    })
 
         steps.append(_step("tamper_analysis", "complete", f"Score: {tamper_score}"))
     except Exception as e:
@@ -289,8 +319,11 @@ async def run_pipeline(
     missing_count = len(layout_details.get("missing_regions", []))
     layout_deviation = (shifted_count * 0.1 + missing_count * 0.15)
 
-    qr_consistency = 1.0 if result.get("qr_status") == "not_found" else (
-        0.0 if any(f.get("finding_type") == "qr_ocr_mismatch" for f in all_findings) else 1.0
+    is_aadhaar_no_qr = (result.get("document_type") == "Aadhaar Card" and result.get("qr_status") == "not_found")
+    qr_consistency = 0.2 if is_aadhaar_no_qr else (
+        1.0 if result.get("qr_status") == "not_found" else (
+            0.0 if any(f.get("finding_type") == "qr_ocr_mismatch" for f in all_findings) else 1.0
+        )
     )
 
     anomaly_signals = {
@@ -315,15 +348,17 @@ async def run_pipeline(
         result["anomaly_label"] = anomaly["anomaly_label"]
         result["anomaly_details"] = anomaly
         if anomaly["anomaly_label"] == "ANOMALY_DETECTED":
+            iso_score = anomaly.get("isolation_forest_score", 0.0)
+            ml_severity = "HIGH" if iso_score > 0.60 else "MEDIUM"
             all_findings.append({
                 "source": "anomaly_detector",
                 "finding_type": "ml_anomaly",
-                "severity": "MEDIUM",
-                "score": anomaly["isolation_forest_score"],
-                "confidence": 0.75,
-                "description": "ML anomaly detector flagged this document as unusual",
+                "severity": ml_severity,
+                "score": iso_score,
+                "confidence": 0.80,
+                "description": f"ML anomaly detector flagged this document as unusual (score: {iso_score:.3f})",
                 "evidence": {"model": anomaly.get("model_used"),
-                             "score": anomaly["isolation_forest_score"]},
+                             "score": iso_score},
             })
         steps.append(_step("anomaly_detection", "complete",
                            f"Label: {anomaly['anomaly_label']}"))

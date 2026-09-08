@@ -32,8 +32,8 @@ backend/uploads/*
 .env.*.local
 frontend/.env.local
 
-# Sensitive API client code
-frontend/lib/api.ts
+# Sensitive config (keep these ignored)
+# frontend/lib/api.ts  ← NOT ignored so Vercel can build
 
 # IDE & OS
 .DS_Store

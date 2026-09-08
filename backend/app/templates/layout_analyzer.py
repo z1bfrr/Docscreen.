@@ -66,17 +66,22 @@ def analyze_layout(
             (rx - 0.08 <= wx <= rx + rw + 0.08) and (ry - 0.08 <= wy <= ry + rh + 0.08)
             for wx, wy, _, _ in word_boxes
         )
-        if not found and reg_info.get("importance") == "CRITICAL":
-            # For critical fields, check if shifted elsewhere
-            if word_boxes:
+        if not found:
+            importance = reg_info.get("importance", "MEDIUM")
+            if importance == "CRITICAL":
                 shifted_regions.append({
                     "region": reg_name,
                     "expected_bbox": [rx, ry, rw, rh],
                     "observed_state": "displaced_or_obscured"
                 })
+                missing_regions.append(reg_name)
+            elif importance == "HIGH":
+                missing_regions.append(reg_name)
 
     # Compute overall similarity score
-    penalties = len(missing_regions) * 0.20 + len(shifted_regions) * 0.15
+    crit_count = sum(1 for m in missing_regions if expected_regions.get(m, {}).get("importance") == "CRITICAL")
+    high_count = sum(1 for m in missing_regions if expected_regions.get(m, {}).get("importance") == "HIGH")
+    penalties = crit_count * 0.25 + high_count * 0.15 + len(shifted_regions) * 0.10
     similarity_score = max(0.20, min(0.98, round(1.0 - penalties, 2)))
 
     return {

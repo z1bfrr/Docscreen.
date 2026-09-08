@@ -33,51 +33,97 @@ def classify_document(
 
     for key, template in TEMPLATES.items():
         score = 0.0
-        
-        # 1. Keyword matching (weighted heavily: 65%)
+        cues_matched = 0
+
+        # 1. Keyword matching (weighted heavily: up to 0.65)
         matched_keywords = [kw for kw in template["keywords"] if kw in text_lower]
-        keyword_score = len(matched_keywords) / max(len(template["keywords"]), 1)
         if matched_keywords:
-            score += min(0.65, len(matched_keywords) * 0.20)
+            cues_matched += len(matched_keywords)
+            score += min(0.65, len(matched_keywords) * 0.22)
 
-        # 2. Aspect ratio compatibility (weighted: 25%)
-        expected_ar = template["aspect_ratio"]
-        tol = template["aspect_ratio_tolerance"]
-        if abs(aspect_ratio - expected_ar) <= tol:
-            score += 0.25
-        else:
-            score += max(0.0, 0.25 - abs(aspect_ratio - expected_ar) * 0.2)
-
-        # 3. Specific ID format cues (15%)
+        # 2. Specific ID format cues (up to 0.40)
         if key == "AADHAAR":
-            if any(len(w.get("word", "")) == 4 and w.get("word", "").isdigit() for w in (words or [])) or "uidai" in text_lower or "aadhaar" in text_lower:
-                score += 0.20
-        elif key == "PAN":
-            if any(len(w.get("word", "")) == 10 and w.get("word", "")[:5].isalpha() for w in (words or [])) or "income tax" in text_lower or "permanent account" in text_lower:
-                score += 0.20
-        elif key == "PASSPORT":
-            if "p<ind" in text_lower or "republic of india" in text_lower and "passport" in text_lower:
-                score += 0.25
-        elif key == "DRIVING_LICENSE":
-            if re.search(r'\b[A-Z]{2}[0-9]{2}\s?[0-9]{11}\b', raw_text) or any(k in text_lower for k in ["driving", "licence", "license", "transport", "dl no", "tamil nadu", "validity (nt)"]):
+            has_12_digits = bool(re.search(r'\b\d{4}\s\d{4}\s\d{4}\b', raw_text) or re.search(r'\b\d{12}\b', raw_text))
+            has_aadhaar_terms = any(k in text_lower for k in ["uidai", "aadhaar", "government ofindia", "government of india", "मेरा आधार", "भारत सरकार", "आधार"])
+            has_gender_dob = any(k in text_lower for k in ["male", "female", "dob", "जन्म तिथि", "पुरुष", "महिला"])
+            if has_12_digits and has_aadhaar_terms:
+                score += 0.40
+                cues_matched += 2
+            elif has_12_digits and has_gender_dob:
                 score += 0.35
+                cues_matched += 2
+            elif has_12_digits:
+                score += 0.20
+                cues_matched += 1
+            elif has_aadhaar_terms:
+                score += 0.25
+                cues_matched += 1
 
-        if score > best_score:
+        elif key == "DRIVING_LICENSE":
+            has_dl_pattern = bool(
+                re.search(r'\b[A-Z]{2}[-\s]?[0-9]{2}[-\s]?[0-9]{4}[-\s]?[0-9]{7}\b', raw_text) or
+                re.search(r'\b[A-Z]{2}[0-9]{2}\s?[0-9]{11}\b', raw_text) or
+                re.search(r'\b[A-Z]{2}[0-9]{13,15}\b', raw_text)
+            )
+            has_dl_terms = any(k in text_lower for k in [
+                "driving licence", "driving license", "indian union driving",
+                "transport department", "validity (nt)", "validity (tr)", "dl no", "licence no", "authorization to drive"
+            ])
+            if has_dl_pattern and has_dl_terms:
+                score += 0.50
+                cues_matched += 2
+            elif has_dl_pattern:
+                score += 0.35
+                cues_matched += 1
+            elif has_dl_terms:
+                score += 0.35
+                cues_matched += 1
+
+        elif key == "PAN":
+            has_pan_num = bool(re.search(r'\b[A-Z]{5}[0-9]{4}[A-Z]\b', raw_text))
+            has_pan_terms = any(k in text_lower for k in ["income tax", "permanent account", "father's name"])
+            if has_pan_num:
+                score += 0.40
+                cues_matched += 2
+            elif has_pan_terms:
+                score += 0.25
+                cues_matched += 1
+
+        elif key == "PASSPORT":
+            has_passport_cue = bool("p<ind" in text_lower or re.search(r'\b[A-Z][0-9]{7}\b', raw_text))
+            if has_passport_cue:
+                score += 0.35
+                cues_matched += 1
+
+        elif key == "VOTER_ID":
+            has_voter_cue = bool(re.search(r'\b[A-Z]{3}[0-9]{7}\b', raw_text) or "election commission" in text_lower)
+            if has_voter_cue:
+                score += 0.35
+                cues_matched += 1
+
+        # 3. Aspect ratio compatibility bonus (only if at least one textual cue matched)
+        if cues_matched > 0:
+            expected_ar = template["aspect_ratio"]
+            tol = template["aspect_ratio_tolerance"]
+            if abs(aspect_ratio - expected_ar) <= tol:
+                score += 0.15
+
+        if score > best_score and cues_matched > 0:
             best_score = score
             best_match = key
 
-    # Confidence threshold: if we found meaningful signals
-    if best_score >= 0.25 and best_match:
-        confidence = min(0.98, max(0.65, best_score))
+    # Confidence threshold: require at least 0.30 score AND a matched template
+    if best_score >= 0.30 and best_match:
+        confidence = min(0.98, max(0.70, best_score))
         return {
             "document_type": TEMPLATES[best_match]["name"],
             "confidence": round(confidence, 2),
             "matched_template": best_match,
         }
     else:
-        # Generic heuristic fallback
+        # Fallback when no template positively matched
         return {
             "document_type": "Unknown Identity Document",
-            "confidence": 0.30,
+            "confidence": 0.25,
             "matched_template": None,
         }

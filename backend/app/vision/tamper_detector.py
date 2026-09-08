@@ -80,6 +80,7 @@ def _compute_noise_inconsistency(gray: np.ndarray) -> Tuple[float, List[Dict]]:
                 "type": "noise_inconsistency",
                 "confidence": round(min(0.95, z / 6.0), 2),
                 "description": f"Abnormal noise floor ({z:.1f}x deviation from background)",
+                "deviation": round(z, 1),
             })
 
     inconsistency_score = min(1.0, len(suspicious_regions) / 10.0)
@@ -184,17 +185,22 @@ def analyze_tamper(image_bytes: bytes) -> Dict[str, Any]:
     all_regions = noise_regions + edge_regions
 
     # Composite tamper indicator score
-    # Require at least two signals to be non-zero for a meaningful score
     active_signals = sum(1 for s in [ela_score, noise_score, edge_score] if s > 0.05)
-    tamper_score = round(
-        0.40 * ela_score + 0.35 * noise_score + 0.25 * edge_score,
-        2
-    )
-    # Attenuate if only one weak signal fired
-    if active_signals < 2 and tamper_score < 0.25:
-        tamper_score = tamper_score * 0.6
+    composite = 0.40 * ela_score + 0.35 * noise_score + 0.25 * edge_score
 
-    tamper_score = min(1.0, max(0.0, tamper_score))
+    # Severe localized noise disparity (photo swap / digital insertion) must not be diluted
+    if noise_score >= 0.6 or len(noise_regions) >= 10:
+        tamper_score = max(composite, min(0.92, noise_score * 0.88))
+    elif noise_score >= 0.3 or len(noise_regions) >= 4:
+        tamper_score = max(composite, min(0.70, noise_score * 0.72))
+    elif edge_score >= 0.4:
+        tamper_score = max(composite, edge_score * 0.80)
+    else:
+        tamper_score = composite
+        if active_signals < 2 and tamper_score < 0.25:
+            tamper_score = tamper_score * 0.6
+
+    tamper_score = round(min(1.0, max(0.0, tamper_score)), 2)
 
     # Heatmap
     heatmap_bytes = _generate_heatmap(img_cv, ela_img, all_regions)

@@ -10,8 +10,10 @@ TEMPLATES: Dict[str, Dict[str, Any]] = {
         "aspect_ratio": 1.58,  # Standard ID-1 card (85.6mm x 53.98mm)
         "aspect_ratio_tolerance": 0.25,
         "keywords": [
-            "government of india", "unique identification", "aadhaar",
-            "mera aadhaar", "uidai", "enrollment", "help@uidai.gov.in"
+            "government of india", "government ofindia", "unique identification", "aadhaar",
+            "mera aadhaar", "uidai", "enrollment", "help@uidai.gov.in", "meri pehchan",
+            "bharat sarkar", "भारत सरकार", "आधार", "भारतीय विशिष्ट पहचान प्राधिकरण",
+            "मेरा आधार", "मेरी पहचान", "आम आदमी का अधिकार"
         ],
         "expected_regions": {
             "header": {"rel_bbox": [0.05, 0.02, 0.90, 0.18], "importance": "HIGH"},
@@ -63,11 +65,11 @@ TEMPLATES: Dict[str, Dict[str, Any]] = {
         "aspect_ratio_tolerance": 0.30,
         "keywords": [
             "driving licence", "driving license", "indian union driving licence",
-            "union of india", "transport department", "government of",
-            "govt of", "dl no", "licence no", "license no", "authorization to drive",
-            "validity", "date of birth", "blood group", "tamil nadu", "karnataka",
-            "maharashtra", "delhi", "kerala", "gujarat", "andhra", "telangana",
-            "son/daughter/wife", "form 7", "rto"
+            "transport department", "dl no", "licence no", "license no",
+            "authorization to drive", "authorisation to drive", "motor vehicles department",
+            "validity", "validity (nt)", "validity (tr)", "date of birth", "blood group",
+            "tamil nadu", "karnataka", "maharashtra", "delhi", "kerala", "gujarat",
+            "andhra", "telangana", "son/daughter/wife", "form 7", "rto", "parivahan"
         ],
         "expected_regions": {
             "header": {"rel_bbox": [0.05, 0.02, 0.90, 0.20], "importance": "HIGH"},

@@ -6,11 +6,14 @@ echo ========================================================
 echo.
 
 :: Step 1: Start Backend
-if exist "%~dp0backend\.venv\Scripts\uvicorn.exe" (
+if exist "%~dp0backend\venv\Scripts\uvicorn.exe" (
+    echo [1/3] Starting Backend API on http://localhost:8000 (using venv with RapidOCR) ...
+    start "DocScreen Backend" cmd /k "cd /d ""%~dp0backend"" && venv\Scripts\uvicorn.exe app.main:app --reload --port 8000"
+) else if exist "%~dp0backend\.venv\Scripts\uvicorn.exe" (
     echo [1/3] Starting Backend API on http://localhost:8000 ...
     start "DocScreen Backend" cmd /k "cd /d ""%~dp0backend"" && .venv\Scripts\uvicorn.exe app.main:app --reload --port 8000"
 ) else (
-    echo [!] Backend .venv not found.
+    echo [!] Backend Python virtual environment not found.
 )
 
 :: Step 2: Start Frontend

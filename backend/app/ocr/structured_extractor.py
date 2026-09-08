@@ -187,6 +187,17 @@ def extract_fields(ocr_result: Dict[str, Any]) -> List[ExtractedField]:
                 break
 
     if not name_extracted:
+        # Aadhaar pattern: Cardholder name is almost always directly above the DOB line
+        for i, line in enumerate(text_lines):
+            if re.search(r'(?:DOB|Date\s*of\s*Birth|जन्म\s*तिथि)', line, re.IGNORECASE) and i > 0:
+                prev_line = text_lines[i - 1].strip()
+                if re.match(r'^[A-Za-z\s.]{3,35}$', prev_line) and not any(
+                    k in prev_line.lower() for k in ["government", "india", "ofindia", "sarkar", "bharat", "uidai", "aadhaar", "male", "female", "licence", "license", "ani"]
+                ):
+                    name_extracted = prev_line
+                    break
+
+    if not name_extracted:
         potential_names = []
         blacklist = {
             "INDIA", "GOVERNMENT", "INCOME", "TAX", "DEPARTMENT", "REPUBLIC",
@@ -194,12 +205,14 @@ def extract_fields(ocr_result: Dict[str, Any]) -> List[ExtractedField]:
             "ISSUE", "DATE", "VALIDITY", "HOLDER", "SIGNATURE", "ADDRESS",
             "ROAD", "MEENAKSHI", "NAGAR", "MADURAI", "AVANIAPURAM", "SOUTH",
             "BLOOD", "GROUP", "ORGAN", "DONOR", "MAIN", "APK", "PDL", "KARTHIC",
-            "MALE", "FEMALE", "MERA", "MERI", "BHARAT", "SARKAR", "UIDAI"
+            "MALE", "FEMALE", "MERA", "MERI", "BHARAT", "SARKAR", "UIDAI",
+            "ANI", "OFINDIA", "GOVERNMENTOFINDIA", "AUTHORITY", "UNIQUE"
         }
         for w in words:
             w_str = w.get("word", "").strip()
-            if (w_str.isupper() and len(w_str) > 2
-                    and w_str not in blacklist
+            w_upper = w_str.upper()
+            if ((w_str.isupper() or w_str.istitle()) and len(w_str) > 2
+                    and w_upper not in blacklist
                     and not any(c.isdigit() for c in w_str)
                     and len(w_str) <= 20):
                 potential_names.append(w_str)
