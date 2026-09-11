@@ -42,7 +42,8 @@ export function AnalysisStepper({ steps, currentStep, complete, riskScore, riskL
     MEDIUM: { stroke: "#f59e0b", glow: "rgba(245,158,11,0.3)",  text: "#fbbf24", bg: "rgba(245,158,11,0.12)", border: "rgba(245,158,11,0.35)" },
     HIGH:   { stroke: "#f43f5e", glow: "rgba(244,63,94,0.35)",   text: "#fb7185", bg: "rgba(244,63,94,0.14)", border: "rgba(244,63,94,0.4)" },
   };
-  const activeColor = colors[((riskLabel?.toUpperCase() in colors) ? riskLabel?.toUpperCase() : "LOW") as keyof typeof colors];
+  const riskKey = (riskLabel?.toUpperCase() || "LOW") as keyof typeof colors;
+  const activeColor = colors[riskKey] || colors.LOW;
 
   return (
     <div className="glass-card" style={{ padding: "20px 18px", overflow: "hidden" }}>

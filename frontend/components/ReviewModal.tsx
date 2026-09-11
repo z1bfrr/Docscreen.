@@ -5,13 +5,15 @@ import { CheckCircle, XCircle, HelpCircle, Loader2 } from "lucide-react";
 
 interface Props {
   analysisId: string;
+  documentId?: string;
   riskScore: number;
   riskLabel: string;
   onClose: () => void;
-  onComplete: (decision: string) => void;
+  onComplete?: (decision: string) => void;
+  onSubmitted?: (decision: string) => void;
 }
 
-export function ReviewModal({ analysisId, riskScore, riskLabel, onClose, onComplete }: Props) {
+export function ReviewModal({ analysisId, documentId, riskScore, riskLabel, onClose, onComplete, onSubmitted }: Props) {
   const [decision, setDecision] = useState<string | null>(null);
   const [notes, setNotes] = useState("");
   const [loading, setLoading] = useState(false);
@@ -29,7 +31,8 @@ export function ReviewModal({ analysisId, riskScore, riskLabel, onClose, onCompl
     setLoading(true);
     try {
       await submitReview(analysisId, decision, notes);
-      onComplete(decision);
+      onComplete?.(decision);
+      onSubmitted?.(decision);
     } catch (e) {
       console.error(e);
     } finally {
