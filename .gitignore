@@ -42,3 +42,20 @@ Thumbs.db
 .vscode/
 .idea/
 .agents/
+
+# Build outputs & Mobile caches
+build/
+**/build/
+.gradle/
+**/.gradle/
+*.class
+*.apk
+*.aab
+local.properties
+dist/
+**/dist/
+# Embedded Git repos
+intify/
+
+
+

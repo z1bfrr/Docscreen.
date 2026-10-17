@@ -1,0 +1,24 @@
+{
+  "model_type": "IsolationForest",
+  "n_estimators": 200,
+  "contamination": 0.25,
+  "features": [
+    "ocr_avg_confidence",
+    "template_similarity_score",
+    "layout_deviation",
+    "image_quality_score_norm",
+    "blur_score_norm",
+    "compression_inconsistency",
+    "tamper_indicator_score",
+    "text_alignment_score",
+    "pattern_validation_failures",
+    "qr_consistency_score",
+    "metadata_anomaly_score",
+    "ocr_disagreement",
+    "cross_field_inconsistency_count_norm"
+  ],
+  "training_samples": 500,
+  "normal_accuracy": 75.0,
+  "anomaly_recall": 85.5,
+  "model_version": "IF-001"
+}

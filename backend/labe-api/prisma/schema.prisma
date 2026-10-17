@@ -1,0 +1,108 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+  email     String   @unique
+  name      String?
+  phone     String?
+  password  String
+  createdAt DateTime @default(now())
+  bookings  BookingOrder[]
+}
+
+model TestCategory {
+  id    Int    @id @default(autoincrement())
+  name  String @unique
+  icon  String
+  color String
+  tests DiagnosticTest[]
+}
+
+model DiagnosticTest {
+  id                       Int      @id @default(autoincrement())
+  name                     String
+  shortName                String
+  categoryId               Int
+  category                 TestCategory @relation(fields: [categoryId], references: [id])
+  description              String
+  preparationInstructions  String
+  turnaroundTime           String
+  sampleType               String
+  parameters               String
+  isPopular                Boolean  @default(false)
+  isHomeCollectionAvailable Boolean @default(true)
+  labPrices                LabTestPrice[]
+  orderTests               OrderTest[]
+}
+
+model LabPartner {
+  id                   Int      @id @default(autoincrement())
+  name                 String
+  address              String
+  city                 String
+  distance             String
+  rating               Float
+  reviewCount          Int
+  isNablCertified      Boolean  @default(false)
+  isCapCertified       Boolean  @default(false)
+  operatingHours       String
+  homeCollectionCharge Int
+  testPrices           LabTestPrice[]
+  orders               BookingOrder[]
+}
+
+model LabTestPrice {
+  id              Int      @id @default(autoincrement())
+  testId          Int
+  test            DiagnosticTest @relation(fields: [testId], references: [id])
+  labId           Int
+  lab             LabPartner @relation(fields: [labId], references: [id])
+  price           Int
+  discountPercent Int      @default(0)
+}
+
+model HealthPackage {
+  id              Int      @id @default(autoincrement())
+  name            String
+  description     String
+  testsIncluded   String
+  originalPrice   Int
+  discountedPrice Int
+  discountPercent Int
+  isBestseller    Boolean  @default(false)
+}
+
+model BookingOrder {
+  id                Int      @id @default(autoincrement())
+  userId            Int
+  user              User     @relation(fields: [userId], references: [id])
+  patientName       String
+  patientAge        Int
+  patientGender     String
+  labId             Int
+  lab               LabPartner @relation(fields: [labId], references: [id])
+  totalAmount       Int
+  collectionType    String   // HOME_COLLECTION or WALK_IN
+  address           String?
+  scheduledDate     String
+  scheduledTimeSlot String
+  status            String   @default("BOOKED") // BOOKED, SAMPLE_COLLECTED, PROCESSING, REPORT_READY, DELIVERED
+  createdAt         DateTime @default(now())
+  tests             OrderTest[]
+}
+
+model OrderTest {
+  id      Int      @id @default(autoincrement())
+  orderId Int
+  order   BookingOrder @relation(fields: [orderId], references: [id])
+  testId  Int
+  test    DiagnosticTest @relation(fields: [testId], references: [id])
+}
